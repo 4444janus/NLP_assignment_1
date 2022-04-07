@@ -2,6 +2,7 @@
 # Run them on data/preprocessed/train/sentences.txt
 
 import spacy
+from collections import Counter
 
 
 
@@ -9,7 +10,8 @@ import spacy
 # For other models and languages check: https://spacy.io/models
 nlp = spacy.load('en_core_web_sm')
 
-file_name = r"C:\Users\janus\OneDrive\Msc Artificial Intelligence\Jaar 1\P5\NLP\assignments\intro2nlp_assignment1_code\intro2nlp_assignment1_code\data\preprocessed\train\sentences.txt"
+#file_name = r"C:\Users\janus\OneDrive\Msc Artificial Intelligence\Jaar 1\P5\NLP\assignments\intro2nlp_assignment1_code\intro2nlp_assignment1_code\data\preprocessed\train\sentences.txt"
+file_name = r"data\preprocessed\train\sentences.txt"
 data = open(file_name, encoding="utf8").read()
 # Let's run the NLP pipeline on our test input
 doc = nlp(data)
@@ -118,6 +120,14 @@ for i in most_common_tag:
     relative = round(i[1] / num_types,2)
     print(f"{i[0]}, {uni}, {i[1]}, {relative}, {words}, {least[0]}")
 
+"""
+3. N-Grams
+
+"""
+
+def nGrams(input):
+    for sentence in input.sents:
+
     
 #########print tokenization
 # for token in doc:
@@ -158,27 +168,6 @@ for i in most_common_tag:
 # Our test input is the first paragraph of https://spacy.io/usage/linguistic-features
 # Let's run the NLP pipeline on our test input
 
-from collections import Counter
-word_frequencies = Counter()
-
-for sentence in doc.sents:
-    words = []
-    for token in sentence:
-        # Let's filter out punctuation
-        if not token.is_punct:
-            words.append(token.text)
-    word_frequencies.update(words)
-
-print(word_frequencies)
-
-#############
-num_tokens = len(doc)
-num_words = sum(word_frequencies.values())
-num_types = len(word_frequencies.keys())
-
-# print(num_tokens, num_words, num_types)
-# print(f"num_tokens: {num_tokens} num_words: {num_words} num_types: {num_types}")
-
 #assignment
 #PART A
 #1
@@ -202,4 +191,4 @@ def assignment_2():
         print(token.text, token.pos_, token.tag_)
 
 # assignment_1()
-assignment_2()
+#assignment_2()
