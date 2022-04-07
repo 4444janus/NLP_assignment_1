@@ -61,10 +61,10 @@ for word in word_frequencies:
 word_length = round(letters / num_words, 2)
 
 #print results
-print(f"Tokens : {num_tokens}\nWords: {num_words}\nTypes: {num_types}\n")
-print(f"Sentences: {num_sentences}")
-print(f"Average per sentence: {average_words}")
-print(f"Average word length: {word_length}")
+#print(f"Tokens : {num_tokens}\nWords: {num_words}\nTypes: {num_types}\n")
+#print(f"Sentences: {num_sentences}")
+#print(f"Average per sentence: {average_words}")
+#print(f"Average word length: {word_length}")
 
 # Word definition: separate I'm into I & 'm. Keep words with "-" as one. Same words in different case are counted as different words.
 
@@ -75,8 +75,8 @@ print(f"Average word length: {word_length}")
 """
 
 most_common = word_frequencies.most_common(11)
-for i in most_common:
-    print(f"{i[0]} : {i[1]}")
+#for i in most_common:
+    #print(f"{i[0]} : {i[1]}")
 # TODO fix case type
 
 def count(doc):
@@ -125,15 +125,37 @@ for i in most_common_tag:
     for word in link:
         words.append(word[0])
     relative = round(i[1] / num_types,2)
-    print(f"{i[0]}, {uni}, {i[1]}, {relative}, {words}, {least[0]}")
+    #print(f"{i[0]}, {uni}, {i[1]}, {relative}, {words}, {least[0]}")
 
 """
 3. N-Grams
 
 """
+from nltk import ngrams
 
-#def nGrams(input):
-#    for sentence in input.sents:
+# When I use doc as input instead of the "raw" data as input it gives different results
+# the 'raw' data seems to work, once the double backslash is filtered.
+
+tokens = list(filter(('\\"').__ne__, data.split())) # Take the raw data and filter out \\
+
+# Get a list of all the POS
+def POS(doc):
+    pos = []
+    for token in doc:
+        if not token.is_punct:
+            pos.append(token.pos_)
+    return pos
+
+def NGrams(input, n):
+    return Counter(ngrams(input, n)).most_common(3)
+
+print("Token bigram:" , NGrams(tokens, 2))
+print("Token trigram:", NGrams(tokens, 3))
+
+pos = POS(doc)
+
+print("POS bigram:"   , NGrams(pos, 2))
+print("POS trigram:"  , NGrams(pos, 3))
 
     
 #########print tokenization
