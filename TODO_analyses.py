@@ -1,6 +1,10 @@
 # Implement linguistic analyses using spacy
 # Run them on data/preprocessed/train/sentences.txt
+from importlib.resources import path
+from nbformat import read
+from sklearn import preprocessing
 
+from collections import Counter
 import spacy
 from collections import Counter
 
@@ -10,9 +14,12 @@ from collections import Counter
 # For other models and languages check: https://spacy.io/models
 nlp = spacy.load('en_core_web_sm')
 
+
 #file_name = r"C:\Users\janus\OneDrive\Msc Artificial Intelligence\Jaar 1\P5\NLP\assignments\intro2nlp_assignment1_code\intro2nlp_assignment1_code\data\preprocessed\train\sentences.txt"
-file_name = r"data\preprocessed\train\sentences.txt"
-data = open(file_name, encoding="utf8").read()
+file = f"data/preprocessed/train/sentences.txt"
+with open(file, "r", encoding="utf8") as in_file:
+    data = in_file.read().rstrip().replace('\n',' ')
+    
 # Let's run the NLP pipeline on our test input
 doc = nlp(data)
 
@@ -125,8 +132,8 @@ for i in most_common_tag:
 
 """
 
-def nGrams(input):
-    for sentence in input.sents:
+#def nGrams(input):
+#    for sentence in input.sents:
 
     
 #########print tokenization
@@ -180,15 +187,9 @@ def nGrams(input):
 #
 # Provide the definition that you used to determine words:
 
-def assignment_1():
-    print(f"num_tokens: {num_tokens} num_types: {num_types} num_words: {num_words}")
 
-    average_words = 5
-    print(f"Average number of words per sentence:{average_words} ")
 
-def assignment_2():
-    for token in doc:
-        print(token.text, token.pos_, token.tag_)
+
 
 # assignment_1()
 #assignment_2()
