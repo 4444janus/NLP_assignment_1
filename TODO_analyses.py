@@ -146,6 +146,7 @@ def POS(doc):
             pos.append(token.pos_)
     return pos
 
+# Use the NLTK ngrams function and then count the most common n-grams
 def NGrams(input, n):
     return Counter(ngrams(input, n)).most_common(3)
 
@@ -157,7 +158,27 @@ pos = POS(doc)
 print("POS bigram:"   , NGrams(pos, 2))
 print("POS trigram:"  , NGrams(pos, 3))
 
-    
+"""
+4. Lemmatization
+
+"""   
+lemma_triples = [] # First element is the lemma, second element is the infliction
+                   # Third the sentence
+
+for sentence in doc.sents:
+    for token in sentence: 
+        #filter punctuation
+        if not token.is_punct and not token.text == token.lemma_ and not (token.lemma_ == '-PRON-'):
+            # I found the example of abuse:
+            if token.lemma_ == 'abuse':
+                lemma_triples.append((token.lemma_, token.text, sentence))
+
+sorted_triple = sorted(lemma_triples, key=lambda tup: tup[0])
+for s in sorted_triple:
+    print(s, '\n')
+
+#print(sorted(lemma_tuples, key=lambda tup: tup[1]))
+
 #########print tokenization
 # for token in doc:
 #     print(token.i, token, token.idx)
