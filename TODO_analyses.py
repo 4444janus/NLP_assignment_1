@@ -1,16 +1,22 @@
 # Implement linguistic analyses using spacy
 # Run them on data/preprocessed/train/sentences.txt
+import spacy
+import pandas as pd
+import nltk
+import matplotlib.pyplot as plt
+import numpy as np
+
 from importlib.resources import path
 from nbformat import read
 from numpy import median
 from sklearn import preprocessing
-import nltk
 from nltk import ngrams
 from nltk.tokenize import word_tokenize
-import pandas as pd
+from wordfreq import zipf_frequency, word_frequency
+from scipy import stats
 
 from collections import Counter
-import spacy
+
 
 
 """
@@ -281,6 +287,49 @@ def basic_stat(data):
     print(df["count"].max())
     #Estonia, Latvia, Lithuania, Romania, Bulgaria
 
+"""
+8. Linguistic characteristics
+
+"""  
+def analyze_ling(data):
+    copy_df = data
+    # filer on coplex and 1 token
+    filter1 = copy_df.iloc[:,-2] == 1
+    filter2 = copy_df.iloc[:, -7].apply(lambda x: len(word_tokenize(x))) == 1
+    
+    # filtering data on basis of both filters
+    copy_df = copy_df[filter1 & filter2]
+
+    # filter on index
+    data = data.loc[copy_df.index]
+   
+
+    language = "en"
+    complex = data.iloc[:,-7].tolist()
+    complexity = data.iloc[:,-1].tolist()
+    frequency = []
+    length = []
+
+    for i in complex:
+        frequency.append(zipf_frequency(i,language))
+        length.append(len(i))
+        
+    # peorson
+    print(stats.pearsonr(length, complexity))
+    print(stats.pearsonr(frequency, complexity))
+
+    plot_scatter(length, complexity, "length", "complexity")
+    plot_scatter(frequency, complexity, "frequency", "complexity")
+
+def plot_scatter(x, y, xname, yname):
+    fig, ax = plt.subplots()
+    xticks = np.arange(0, (max(x)+1))
+    ax.set_xlabel(xname)
+    ax.set_ylabel(yname)
+    ax.set_xticks(xticks)
+    ax.set_title(f"Correlation of {xname} and {yname}")
+    ax.scatter(x, y)
+    plt.savefig(f"output/{xname}_{yname}.png")
 
 if __name__ == "__main__":
     # This loads a small English model trained on web data.
@@ -317,7 +366,7 @@ if __name__ == "__main__":
     #7
     file2 = f"data/original/english/WikiNews_Train.tsv"
     data2 = pd.read_csv(file2, sep='\t', header=None)
-    # with open(file2, "r", encoding="utf8") as in_file2:
-    #     data2 = in_file2.read().rstrip().replace('\n',' ')
 
-    basic_stat(data2)
+    # basic_stat(data2)
+    #8
+    analyze_ling(data2)
