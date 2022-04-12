@@ -16,7 +16,7 @@ nlp = spacy.load('en_core_web_sm')
 file = f"data/preprocessed/train/sentences.txt"
 with open(file, "r") as in_file:
     data = in_file.read().rstrip().replace('\n',' ')
-    
+
 # Let's run the NLP pipeline on our test input
 doc = nlp(data)
 
@@ -129,6 +129,3 @@ for i in most_common_tag:
 N-Grams
 
 """
-
-
-
