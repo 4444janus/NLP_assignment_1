@@ -35,7 +35,8 @@ def frequencies(doc):
         for token in sentence: 
             #filter punctuation
             if not token.is_punct:
-                words.append(token.text)
+                word = token.text.lower()
+                words.append(word)
         word_frequencies.update(words)
 
     return word_frequencies, num_sentences
@@ -120,13 +121,14 @@ def count(doc):
 def linked(tag):
 
     frequency = Counter()
-    word = []
+    words = []
 
     for token in doc:
         if not token.is_punct:
+            word = token.text.lower()
             if token.tag_ == tag:
-                word.append(token.text)
-    frequency.update(word)
+                words.append(word)
+    frequency.update(words)
 
     return frequency.most_common(3), frequency.most_common()[-1]
 
@@ -261,8 +263,8 @@ def basic_stat(data):
     count_0 = binary.value_counts()[0]
     print(count_0) 
     #Number of instances labeled with 1: 
-    count_0 = binary.value_counts()[1]
-    print(count_0)
+    count_1 = binary.value_counts()[1]
+    print(count_1)
 
     #Min, max, median, mean, and stdev of the probabilistic label: 
     min_prob = prob.min()
@@ -302,34 +304,48 @@ def analyze_ling(data):
 
     # filter on index
     data = data.loc[copy_df.index]
-   
 
     language = "en"
     complex = data.iloc[:,-7].tolist()
     complexity = data.iloc[:,-1].tolist()
     frequency = []
     length = []
+    POSlist = []
 
     for i in complex:
         frequency.append(zipf_frequency(i,language))
         length.append(len(i))
+        token = nlp(i)
+        POSlist.append(token[0].pos_)
+
         
-    # peorson
+    # stringtokens = ' '.join(copy_df.iloc[:,-7].tolist())   
+    # tokens = nlp(stringtokens)
+    # for token in tokens: 
+        
+
+    # pearson
     print(stats.pearsonr(length, complexity))
     print(stats.pearsonr(frequency, complexity))
 
-    plot_scatter(length, complexity, "length", "complexity")
-    plot_scatter(frequency, complexity, "frequency", "complexity")
-
+    # print(tokens)
+    # print(POSlist)
+    # print(len(POSlist))
+    # print(len(complexity))
+    # plot_scatter(length, complexity, "length", "complexity")
+    # plot_scatter(frequency, complexity, "frequency", "complexity")
+    plot_scatter(POSlist, complexity, "POS", "complexity")
+    
 def plot_scatter(x, y, xname, yname):
     fig, ax = plt.subplots()
-    xticks = np.arange(0, (max(x)+1))
+    #xticks = np.arange(0, (max(x)+1))
     ax.set_xlabel(xname)
     ax.set_ylabel(yname)
-    ax.set_xticks(xticks)
+    #ax.set_xticks(xticks)
     ax.set_title(f"Correlation of {xname} and {yname}")
     ax.scatter(x, y)
     plt.savefig(f"output/{xname}_{yname}.png")
+
 
 if __name__ == "__main__":
     # This loads a small English model trained on web data.
@@ -345,20 +361,20 @@ if __name__ == "__main__":
     # Let's run the NLP pipeline on our test input
     doc = nlp(data)
 
-    # # 1
-    # tokenization(doc)
+    # 1
+    #tokenization(doc)
     #2
-    # word_classes(doc)
+    #word_classes(doc)
     #3
     # tokens = list(filter(('\\"').__ne__, data.split())) # Take the raw data and filter out \\
     # Print_ngrams(doc)
     #4
-    # analysis_lemmatization()
+    #analysis_lemmatization()
     #5
-    # analysis_NER()
+    #analysis_NER()
     #6
     """
-    a. It marks the tart and end of (a) target word(s) in the sentence.
+    a. It marks the start and end of (a) target word(s) in the sentence.
     b. It means that 40% of the annotators marked the word as complex.
     c. 8th and 9th columns show number of native vs non-native annotators who marked the target as difficult. 
         The binary is 1 after only 1 mark of difficult. The probability is native + non-native combined
@@ -367,6 +383,11 @@ if __name__ == "__main__":
     file2 = f"data/original/english/WikiNews_Train.tsv"
     data2 = pd.read_csv(file2, sep='\t', header=None)
 
-    # basic_stat(data2)
-    #8
+    #basic_stat(data2)
+    # #8
     analyze_ling(data2)
+    #9
+    """
+    - containing certain letters like z, x, y, q
+    - a long word that consists of compounds might be easier than the same length without smaller compounds
+    """
