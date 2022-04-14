@@ -318,6 +318,10 @@ def analyze_ling(data):
     print(stats.pearsonr(length, complexity))
     print(stats.pearsonr(frequency, complexity))
 
+    all_text = np.column_stack(copy_df.iloc[:, -7]).tostring()
+
+    print(all_text)
+
     plot_scatter(length, complexity, "length", "complexity")
     plot_scatter(frequency, complexity, "frequency", "complexity")
 
@@ -338,7 +342,8 @@ if __name__ == "__main__":
     # nltk.download('punkt')
 
     #file_name = r"C:\Users\janus\OneDrive\Msc Artificial Intelligence\Jaar 1\P5\NLP\assignments\intro2nlp_assignment1_code\intro2nlp_assignment1_code\data\preprocessed\train\sentences.txt"
-    file = f"data/preprocessed/train/sentences.txt"
+    file = f"NLP_assignment_1/data/preprocessed/train/sentences.txt"
+    #file = f"data/preprocessed/train/sentences.txt"
     with open(file, "r", encoding="utf8") as in_file:
         data = in_file.read().rstrip().replace('\n',' ')
 
@@ -346,7 +351,7 @@ if __name__ == "__main__":
     doc = nlp(data)
 
     # # 1
-    # tokenization(doc)
+    tokenization(doc)
     #2
     # word_classes(doc)
     #3
@@ -364,9 +369,10 @@ if __name__ == "__main__":
         The binary is 1 after only 1 mark of difficult. The probability is native + non-native combined
      """ 
     #7
-    file2 = f"data/original/english/WikiNews_Train.tsv"
+    file2 = f"NLP_assignment_1/data/original/english/WikiNews_Train.tsv"
+    #file2 = f"data/original/english/WikiNews_Train.tsv"
     data2 = pd.read_csv(file2, sep='\t', header=None)
 
-    # basic_stat(data2)
+    #basic_stat(data2)
     #8
     analyze_ling(data2)
