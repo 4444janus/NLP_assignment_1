@@ -5,12 +5,14 @@
 # Frequency baseline: determines the class based on a frequency threshold
 
 from model.data_loader import DataLoader
+from collections import Counter
 
 # Each baseline returns predictions for the test data. The length and frequency baselines determine a threshold using the development data.
 
 def majority_baseline(train_sentences, train_labels, testinput, testlabels):
     predictions = []
 
+    
     # TODO: determine the majority class based on the training data
     # ...
     majority_class = "X"
@@ -50,7 +52,7 @@ if __name__ == '__main__':
     with open(test_path + "sentences.txt") as testfile:
         testinput = testfile.readlines()
 
-    with open("test_path + labels.txt") as test_labelfile:
+    with open("test_path + labels.txt") as test_label_file:
         testlabels = test_label_file.readlines()
     majority_accuracy, majority_predictions = majority_baseline(train_sentences, train_labels, testinput)
 
