@@ -108,11 +108,11 @@ def train_and_evaluate(model, train_data, val_data, optimizer, loss_fn, metrics,
         utils.load_checkpoint(restore_path, model, optimizer)
 
     best_val_acc = 0.0
-
+    
     for epoch in range(params.num_epochs):
         # Run one epoch
         logging.info("Epoch {}/{}".format(epoch + 1, params.num_epochs))
-
+       
         # compute number of batches in one epoch (one full pass over the training set)
         num_steps = (params.train_size + 1) // params.batch_size
         train_data_iterator = data_loader.data_iterator(

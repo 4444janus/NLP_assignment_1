@@ -22,7 +22,7 @@ def save_vocab_to_txt_file(vocab, txt_path):
 
     Args:
         vocab: (iterable object) yields token
-        txt_path: (stirng) path to vocab file
+        txt_path: (string) path to vocab file
     """
     with open(txt_path, "w") as f:
         for token in vocab:
