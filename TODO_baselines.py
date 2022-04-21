@@ -275,7 +275,7 @@ if __name__ == '__main__':
     # Run all the baselines on the development set:
     print("Development data baselines:")
     majority_accuracy, majority_predictions = majority_baseline(cleaned_dev_labels)
-    random_accuracy, random_predictions     = random_baseline(cleaned_train_labels)
+    random_accuracy, random_predictions     = random_baseline(cleaned_dev_labels)
     length_accuracy, length_predictions = length_baseline(cleaned_dev_sentences, cleaned_dev_labels)
     frequency_accuracy, frequency_predictions = frequency_baseline(cleaned_dev_sentences, cleaned_dev_labels)
 
