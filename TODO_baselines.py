@@ -13,24 +13,30 @@ import matplotlib.pyplot as plt
 
 # Each baseline returns predictions for the test data. The length and frequency baselines determine a threshold using the development data.
 
-def majority_baseline(train_labels):
+def majority_baseline(input_labels):
       
-    """ print("N is the majority class") 
-    print("N:", train_labels.count("N"))
-    print("C:", train_labels.count("C")) """
+    n = " ".join(input_labels).count("N")
+    c = " ".join(input_labels).count("C")
 
-    cleaned_labels = clean_data(train_labels)
+    #print("N is the majority class") 
+    print("N:", n)
+    print("C:", c)
    
-    majority_class = "N"
+    majority_class = "X"
+    if(n > c):
+        majority_class = "N"
+    else:
+        majority_class = "C"
+
     predictions = []
 
-    for instance in train_labels:
+    for instance in input_labels:
         tokens = instance.split(" ")
         instance_predictions = [majority_class for t in tokens]
         predictions.append(instance_predictions)
     
     print("Majority baseline: ")
-    accuracy = Accuracy(predictions, cleaned_labels)
+    accuracy = Accuracy(predictions, input_labels)
 
     return accuracy, predictions
 
@@ -249,7 +255,7 @@ if __name__ == '__main__':
 
     # Run all the baselines on the development set:
     print("Development data baselines:")
-    majority_accuracy, majority_predictions = majority_baseline(cleaned_dev_sentences)
+    majority_accuracy, majority_predictions = majority_baseline(cleaned_dev_labels)
     random_accuracy, random_predictions     = random_baseline(cleaned_dev_sentences)
     length_accuracy, length_predictions = length_baseline(cleaned_dev_sentences, cleaned_dev_labels)
     frequency_accuracy, frequency_predictions = frequency_baseline(cleaned_dev_sentences, cleaned_dev_labels)
