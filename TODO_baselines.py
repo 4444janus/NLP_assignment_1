@@ -6,6 +6,8 @@
 
 from cProfile import label
 from hashlib import new
+
+from numpy import average
 from model.data_loader import DataLoader
 import random
 from wordfreq import zipf_frequency, word_frequency
@@ -35,28 +37,43 @@ def majority_baseline(input_labels):
         instance_predictions = [majority_class for t in tokens]
         predictions.append(instance_predictions)
     
-    print("Majority baseline: ")
+    
     accuracy = Accuracy(predictions, input_labels)
+    print(f"Majority baseline: {round(accuracy, 3)}")
 
     return accuracy, predictions
 
 def random_baseline(training_labels):    
     SEED = 101
 
-    predictions = []    
-    classes = ["N", "C"]
+    all_predictions = []
+    accuracies = []
+    best_accuracy = 0
+    best_accuracy_index = 0
     random.seed(SEED)
-    for instance in training_labels:        
-        tokens = instance.split(" ")
-        predictions_sentence = []
-        for label in tokens:
-            rand_int = random.randint(0,1)
-            predictions_sentence.append(classes[rand_int])
-        predictions.append(predictions_sentence)
+    for i in range(0,100):
+        predictions = []    
+        classes = ["N", "C"]        
+        for instance in training_labels:        
+            tokens = instance.split(" ")
+            predictions_sentence = []
+            for label in tokens:
+                rand_int = random.randint(0,1)
+                predictions_sentence.append(classes[rand_int])
+            predictions.append(predictions_sentence)
+        accuracy = Accuracy(predictions, training_labels)
+        if(accuracy > best_accuracy):
+            best_accuracy = accuracy
+            best_accuracy_index = i
+        accuracies.append(accuracy)
+        all_predictions.append(predictions)
     
-    print("Random baseline: ") # We know that the accuracy should be 0.5
-    accuracy = 0.5
-    print(f"Accuracy: {accuracy}")
+    # Select the random predictions with the highest accuracy:
+    predictions = all_predictions[i]
+    
+    accuracy = sum(accuracies) / len(accuracies)
+    accuracy = round(accuracy, 3)
+    print(f"Random baseline: {accuracy}")
     return accuracy, predictions
 
 def length_baseline(traininput, label_input):
@@ -105,8 +122,9 @@ def length_baseline(traininput, label_input):
                     prediction_sentence.append("C")
         predictions.append(prediction_sentence)
 
-    print("Length baseline:")
+    
     accuracy = Accuracy(predictions, label_list)
+    print(f"Length baseline: {round(accuracy, 3)}")
     return accuracy, predictions
 
 def frequency_baseline(traininput, train_labels):
@@ -123,8 +141,8 @@ def frequency_baseline(traininput, train_labels):
     thresholds = []
     accuracies = []
 
-    """ for thresh in range(0, 25, 1):
-        new_threshold = thresh * 0.5
+    """ for thresh in range(0, 50, 1):
+        new_threshold = thresh * 0.00005
         predictions = []
         for i in range(0, len(frequency)):    
             prediction_sentence = []        
@@ -152,9 +170,10 @@ def frequency_baseline(traininput, train_labels):
             else:
                     prediction_sentence.append("N")
         predictions.append(prediction_sentence)
-    print("Frequency baseline: ")
-    print(f"Threshold: {new_threshold}")
+    
+    #print(f"Threshold: {new_threshold}")
     accuracy = Accuracy(predictions, train_labels) 
+    print(f"Frequency baseline: {round(accuracy, 3)}")
     thresholds.append(new_threshold)
     accuracies.append(accuracy)
           
@@ -162,7 +181,7 @@ def frequency_baseline(traininput, train_labels):
     """ plt.plot(thresholds, accuracies)
     plt.xlabel("Threshold")
     plt.ylabel("Accuracy")
-    plt.show() """
+    plt.show()  """
 
     return accuracy, predictions
 
@@ -210,7 +229,7 @@ def Accuracy(predictions, actual_labels):
                 false_neg += 1
             if(true_label != predicted_label and predicted_label == "N"):
                 true_neg += 1 """
-    print(f"Right: {right} Total: {total_length} Accuracy: {round(right/total_length, 3)}")
+    #print(f"Right: {right} Total: {total_length} Accuracy: {round(right/total_length, 3)}")
     #print(f"True pos: {true_pos} \n False pos {false_pos} \n True neg: {true_neg} \n False neg {false_neg}")
     return right/total_length
     
@@ -256,7 +275,7 @@ if __name__ == '__main__':
     # Run all the baselines on the development set:
     print("Development data baselines:")
     majority_accuracy, majority_predictions = majority_baseline(cleaned_dev_labels)
-    random_accuracy, random_predictions     = random_baseline(cleaned_dev_sentences)
+    random_accuracy, random_predictions     = random_baseline(cleaned_train_labels)
     length_accuracy, length_predictions = length_baseline(cleaned_dev_sentences, cleaned_dev_labels)
     frequency_accuracy, frequency_predictions = frequency_baseline(cleaned_dev_sentences, cleaned_dev_labels)
 
