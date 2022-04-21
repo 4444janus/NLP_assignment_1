@@ -4,6 +4,10 @@ from TODO_baselines import clean_data
 
 def evaluate(predictions, true_lables):
 
+    n = " ".join(true_lables).count("N")
+    c = " ".join(true_lables).count("C")
+    total = n + c
+
     # This section is as C as positive
 
     true_pos  = 0
@@ -74,9 +78,11 @@ def evaluate(predictions, true_lables):
     except:
         n_f1 = 0
 
-    print(f"N: Precision: {n_precision}. Recall: {n_recall}. F1: {n_f1}.")
-    #First triple C is positive, second N is positive
-    return (c_precision, c_recall, c_f1), (n_precision, n_recall, n_f1)
+    weighted_f1 = ((c * c_f1) + (n * n_f1)) / total
+
+    print(f"N: Precision: {n_precision}. Recall: {n_recall}. F1: {n_f1}. Weighted F1: {weighted_f1}")
+    #First triple C is positive, second N is positive, the last value is the weighted f1
+    return (c_precision, c_recall, c_f1), (n_precision, n_recall, n_f1), weighted_f1
 
 
 if __name__ == '__main__':
@@ -104,21 +110,24 @@ if __name__ == '__main__':
 
     with open(output_path + "frequency_predictions.txt", encoding="utf8") as frequency_predictions_file:
         frequency_predictions = clean_data(frequency_predictions_file.readlines())
-
+    
+    with open(output_path + "model_output2.txt", encoding="utf8") as LSTM_predictions_file:
+        LSTM_predictions = clean_data(LSTM_predictions_file.readlines())
 
 print("Majority: ")
-majority_eval_c, majority_eval_n = evaluate(majority_predictions, dev_labels)
+majority_eval_c, majority_eval_n, majority_weighted_f1 = evaluate(majority_predictions, dev_labels)
 
 print("Random: ")
-random_eval_c, random_eval_n = evaluate(random_predictions, dev_labels)
+random_eval_c, random_eval_n, random_weighted_f1 = evaluate(random_predictions, dev_labels)
 
 print("Length: ")
-length_eval_c, length_eval_n = evaluate(length_predictions, dev_labels)
+length_eval_c, length_eval_n, length_weighted_f1 = evaluate(length_predictions, dev_labels)
 
 print("Frequency: ")
-frequency_eval_c, frequency_eval_n = evaluate(frequency_predictions, dev_labels)
+frequency_eval_c, frequency_eval_n, frequency_weighted_f1 = evaluate(frequency_predictions, dev_labels)
 
-#print("LSTM: ")
-#evaluate(majority_predictions, dev_labels)
+print("LSTM: ")
+LSTM_eval_c, LSTM_eval_n, lstm_weighted_f1 = evaluate(LSTM_predictions, test_labels)
+
 
     
