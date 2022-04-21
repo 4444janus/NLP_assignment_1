@@ -1,8 +1,11 @@
 from TODO_baselines import clean_data
 # The original code only outputs the accuracy and the loss.
-# Process the file model_output.tsv and calculate precision, recall, and F1 for each class
+# Process the file model_output.tsv and calculate c_precision, c_recall, and F1 for each class
 
 def evaluate(predictions, true_lables):
+
+    # This section is as C as positive
+
     true_pos  = 0
     false_pos = 0
     false_neg = 0
@@ -20,23 +23,60 @@ def evaluate(predictions, true_lables):
                 false_neg += 1
             if(labels[j] != pred[j] and pred[j] == "N"):
                 true_neg += 1
-    print(f"True pos: {true_pos} \n False pos {false_pos} \n True neg: {true_neg} \n False neg {false_neg}")
+    #print(f"True pos: {true_pos} \n False pos {false_pos} \n True neg: {true_neg} \n False neg {false_neg}")
 
     try:
-        precision = true_pos / (true_pos + false_pos)
+        c_precision = true_pos / (true_pos + false_pos)
     except:
-        precision = 0
+        c_precision = 0
     try:
-        recall = true_pos / (true_pos / false_neg)
+        c_recall = true_pos / (true_pos / false_neg)
     except:
-        recall = 0
+        c_recall = 0
     try:
-        f1 = 2 * (precision * recall) / (precision + recall)
+        c_f1 = 2 * (c_precision * c_recall) / (c_precision + c_recall)
     except:
-        f1 = 0
+        c_f1 = 0
 
-    print(f"Precision: {precision}. Recall: {recall}. F1: {f1}.")
+    print(f"C: Precision: {c_precision}. Recall: {c_recall}. F1: {c_f1}.")
 
+    true_pos  = 0
+    false_pos = 0
+    false_neg = 0
+    true_neg  = 0
+
+    # This section is for N as positive
+ 
+    for i in range(0, len(predictions)):  
+        labels = true_lables[i].strip().split(" ")   
+        pred   = predictions[i].strip().split(" ")  
+        for j in range(0, len(pred)):            
+            if(labels[j] == pred[j] and pred[j] == "N"):
+                true_pos += 1
+            if(labels[j] != pred[j] and pred[j] == "N"):
+                false_pos += 1
+            if(labels[j] == pred[j] and pred[j] == "C"):
+                false_neg += 1
+            if(labels[j] != pred[j] and pred[j] == "C"):
+                true_neg += 1
+    #print(f"True pos: {true_pos} \n False pos {false_pos} \n True neg: {true_neg} \n False neg {false_neg}")
+
+    try:
+        n_precision = true_pos / (true_pos + false_pos)
+    except:
+        n_precision = 0
+    try:
+        n_recall = true_pos / (true_pos / false_neg)
+    except:
+        n_recall = 0
+    try:
+        n_f1 = 2 * (c_precision * c_recall) / (c_precision + c_recall)
+    except:
+        n_f1 = 0
+
+    print(f"N: Precision: {n_precision}. Recall: {n_recall}. F1: {n_f1}.")
+    #First triple C is positive, second N is positive
+    return (c_precision, c_recall, c_f1), (n_precision, n_recall, n_f1)
 
 
 if __name__ == '__main__':
@@ -65,17 +105,18 @@ if __name__ == '__main__':
     with open(output_path + "frequency_predictions.txt", encoding="utf8") as frequency_predictions_file:
         frequency_predictions = clean_data(frequency_predictions_file.readlines())
 
+
 print("Majority: ")
-evaluate(majority_predictions, dev_labels)
+majority_eval_c, majority_eval_n = evaluate(majority_predictions, dev_labels)
 
 print("Random: ")
-evaluate(random_predictions, dev_labels)
+random_eval_c, random_eval_n = evaluate(random_predictions, dev_labels)
 
 print("Length: ")
-evaluate(length_predictions, dev_labels)
+length_eval_c, length_eval_n = evaluate(length_predictions, dev_labels)
 
 print("Frequency: ")
-evaluate(frequency_predictions, dev_labels)
+frequency_eval_c, frequency_eval_n = evaluate(frequency_predictions, dev_labels)
 
 #print("LSTM: ")
 #evaluate(majority_predictions, dev_labels)
