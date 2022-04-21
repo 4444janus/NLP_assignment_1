@@ -53,7 +53,7 @@ def random_baseline(training_labels):
     print(f"Accuracy: {accuracy}")
     return accuracy, predictions
 
-def length_baseline(traininput, train_labels):
+def length_baseline(traininput, label_input):
 
     training_words_length = []
     label_list = []
@@ -61,11 +61,11 @@ def length_baseline(traininput, train_labels):
     # In this loop we make a list of lists with all the lengths of the words
     # And we reformat the labels
     for i in range(0, len(traininput)):
-        labels = train_labels[i].split(" ")
+        labels = label_input[i].split(" ")
         words  = traininput[i].split(" ")
         length_sentence = []
         label_sentence = []
-        for j in range(0, len(words)):  
+        for j in range(0, len(labels)):  
             length_sentence.append(len(words[j])) 
             label_sentence.append(labels[j])         
             #print((len(words[j]), labels[j]))
@@ -212,25 +212,26 @@ def Accuracy(predictions, actual_labels):
 
 
 if __name__ == '__main__':
-    train_path = "data/preprocessed/train/"
-    dev_path = "data/preprocessed/val/"
-    test_path = "data/preprocessed/test/"
-    output_path = "output/"
+    
+    train_path = "NLP_assignment_1/data/preprocessed/train/"
+    dev_path = "NLP_assignment_1/data/preprocessed/val/"
+    test_path = "NLP_assignment_1/data/preprocessed/test/"
+    output_path = "NLP_assignment_1/output/"
 
     # Note: this loads all instances into memory. If you work with bigger files in the future, use an iterator instead.
-
+    
     with open(train_path + "sentences.txt", encoding="utf8") as sent_file:
         train_sentences = sent_file.readlines()
 
     with open(train_path + "labels.txt", encoding="utf8") as label_file:
         train_labels = label_file.readlines()
 
-
     with open(dev_path + "sentences.txt", encoding="utf8") as dev_file:
         dev_sentences = dev_file.readlines()
 
-    with open(train_path + "labels.txt", encoding="utf8") as dev_label_file:
+    with open(dev_path + "labels.txt", encoding="utf8") as dev_label_file:
         dev_labels = dev_label_file.readlines()
+
     with open(test_path + "sentences.txt") as testfile:
         testinput = testfile.readlines()
 
@@ -239,17 +240,30 @@ if __name__ == '__main__':
 
     cleaned_train_sentences = clean_data(train_sentences)
     cleaned_train_labels = clean_data(train_labels)
-    cleaned_testinput = clean_data(testinput)
+
+    cleaned_dev_sentences = clean_data(dev_sentences)
+    cleaned_dev_labels = clean_data(dev_labels)
+
+    cleaned_test_sentences = clean_data(testinput)
     cleaned_test_labels = clean_data(test_labels)
 
-    majority_accuracy, majority_predictions = majority_baseline(cleaned_train_labels)
-    random_accuracy, random_predictions     = random_baseline(cleaned_train_labels)
-    length_accuracy, length_predictions = length_baseline(cleaned_train_sentences, cleaned_train_labels)
-    frequency_accuracy, frequency_predictions = frequency_baseline(cleaned_train_sentences, cleaned_train_labels)
+    # Run all the baselines on the development set:
+    print("Development data baselines:")
+    majority_accuracy, majority_predictions = majority_baseline(cleaned_dev_sentences)
+    random_accuracy, random_predictions     = random_baseline(cleaned_dev_sentences)
+    length_accuracy, length_predictions = length_baseline(cleaned_dev_sentences, cleaned_dev_labels)
+    frequency_accuracy, frequency_predictions = frequency_baseline(cleaned_dev_sentences, cleaned_dev_labels)
 
     save_predictions(majority_predictions, output_path + "majority_predictions.txt")
     save_predictions(random_predictions, output_path + "random_predictions.txt")
     save_predictions(length_predictions, output_path + "length_predictions.txt")
     save_predictions(frequency_predictions, output_path + "frequency_predictions.txt")
+
+    print("")
+    print("Test data baselines:")
+    majority_baseline(cleaned_test_labels)
+    random_baseline(cleaned_test_labels)
+    length_baseline(cleaned_test_sentences, cleaned_test_labels)
+    frequency_baseline(cleaned_test_sentences, cleaned_test_labels)
 
     # TODO: output the predictions in a suitable way so that you can evaluate them
